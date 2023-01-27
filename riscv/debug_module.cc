@@ -187,7 +187,7 @@ valid: progbuf=00000374-00000380
   printf("valid: entry=%08x-%08x\n", DEBUG_ROM_ENTRY, DEBUG_ROM_ENTRY + debug_rom_raw_len);
   printf("valid: where=%08x-%08x\n", DEBUG_ROM_WHERETO, DEBUG_ROM_WHERETO + 4);
   printf("valid: flags=%08x-%08x\n", DEBUG_ROM_FLAGS, DEBUG_ROM_FLAGS + 1024);
-  printf("valid: abstract=%08lx-%08lx\n", debug_abstract_start, debug_abstract_start + sizeof(debug_abstract));
+  printf("valid: abstract=%08x-%08lx\n", debug_abstract_start, debug_abstract_start + sizeof(debug_abstract));
   printf("valid: data=%08x-%08lx\n", debug_data_start, debug_data_start + sizeof(dmdata));
   printf("valid: progbuf=%08x-%08x\n", debug_progbuf_start, debug_progbuf_start + program_buffer_bytes);
   return false;
