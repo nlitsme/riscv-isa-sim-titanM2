@@ -508,6 +508,16 @@ void state_t::reset(processor_t* const proc, reg_t max_isa)
   if (proc->extension_enabled_const(EXT_ZCMT))
     csrmap[CSR_JVT] = jvt = std::make_shared<jvt_csr_t>(proc, CSR_JVT, 0);
 
+  // TitanM2 regs
+  csrmap[0x7c0] = std::make_shared<basic_csr_t>(proc, 0x7c0, 0);
+  csrmap[0x7c1] = std::make_shared<basic_csr_t>(proc, 0x7c1, 0);
+  csrmap[0x7c2] = std::make_shared<basic_csr_t>(proc, 0x7c2, 0);
+  csrmap[0x7c3] = std::make_shared<basic_csr_t>(proc, 0x7c3, 0);
+  csrmap[0x7c4] = std::make_shared<basic_csr_t>(proc, 0x7c4, 0);
+  csrmap[0x7c5] = std::make_shared<basic_csr_t>(proc, 0x7c5, 0);
+  csrmap[0x7d0] = std::make_shared<basic_csr_t>(proc, 0x7d0, 0);
+  csrmap[0x807] = std::make_shared<basic_csr_t>(proc, 0x807, 0);
+
   serialized = false;
 
   log_reg_write.clear();
