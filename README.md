@@ -1,6 +1,9 @@
 Spike RISC-V ISA Simulator
 ============================
 
+For the Titan-M2 specific modifications, see [README-TitanM2.md](README-TitanM2.md)
+
+
 About
 -------------
 
