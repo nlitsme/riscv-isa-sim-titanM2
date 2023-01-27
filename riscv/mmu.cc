@@ -73,8 +73,10 @@ reg_t mmu_t::translate(reg_t addr, reg_t len, access_type type, uint32_t xlate_f
   }
 
   reg_t paddr = walk(addr, type, mode, virt, hlvx) | (addr & (PGSIZE-1));
-  if (!pmp_ok(paddr, len, type, mode))
+  if (!pmp_ok(paddr, len, type, mode)) {
+    //printf("pmp exception(%08lx-%08lx, %d, %d)\n", paddr, paddr+len, type, mode);
     throw_access_exception(virt, addr, type);
+  }
   return paddr;
 }
 
@@ -154,9 +156,12 @@ bool mmu_t::mmio_fetch(reg_t paddr, size_t len, uint8_t* bytes)
 
 bool mmu_t::mmio_load(reg_t paddr, size_t len, uint8_t* bytes)
 {
-  if (!mmio_ok(paddr, LOAD))
+  if (!mmio_ok(paddr, LOAD)) {
+    printf("mmu.mmio_load(%08lx-%08lx) failed\n", paddr, paddr+len);
     return false;
+  }
 
+  //printf("mmu.mmio_load(%08lx-%08lx) -> sim\n", paddr, paddr+len);
   return sim->mmio_load(paddr, len, bytes);
 }
 
@@ -326,7 +331,7 @@ bool mmu_t::pmp_ok(reg_t addr, reg_t len, access_type type, reg_t mode)
 {
   if (!proc || proc->n_pmp == 0)
     return true;
-
+  //printf("pmp_ok(%08lx-%08lx\n", addr, addr+len);
   for (size_t i = 0; i < proc->n_pmp; i++) {
     // Check each 4-byte sector of the access
     bool any_match = false;
@@ -334,6 +339,7 @@ bool mmu_t::pmp_ok(reg_t addr, reg_t len, access_type type, reg_t mode)
     for (reg_t offset = 0; offset < len; offset += 1 << PMP_SHIFT) {
       reg_t cur_addr = addr + offset;
       bool match = proc->state.pmpaddr[i]->match4(cur_addr);
+      //printf("pmp i=%d, o=%d -> match=%d\n", i, offset, match);
       any_match |= match;
       all_match &= match;
     }
@@ -342,7 +348,6 @@ bool mmu_t::pmp_ok(reg_t addr, reg_t len, access_type type, reg_t mode)
       // If the PMP matches only a strict subset of the access, fail it
       if (!all_match)
         return false;
-
       return proc->state.pmpaddr[i]->access_ok(type, mode);
     }
   }

@@ -10,6 +10,7 @@ void bus_t::add_device(reg_t addr, abstract_device_t* dev)
   // iteration over this sort, which it does. (python's
   // SortedDict is a good analogy)
   devices[addr] = dev;
+  printf("added device at %08lx\n", addr);
 }
 
 bool bus_t::load(reg_t addr, size_t len, uint8_t* bytes)
@@ -20,8 +21,11 @@ bool bus_t::load(reg_t addr, size_t len, uint8_t* bytes)
   if (devices.empty() || it == devices.begin()) {
     // Either the bus is empty, or there weren't 
     // any items with a base address <= addr
+    printf("bus: addr %08lx not found\n", addr);
     return false;
   }
+  //printf("bus: addr %08lx found\n", addr);
+
   // Found at least one item with base address <= addr
   // The iterator points to the device after this, so
   // go back by one item.

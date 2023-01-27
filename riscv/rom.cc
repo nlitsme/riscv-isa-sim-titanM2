@@ -8,8 +8,11 @@ rom_device_t::rom_device_t(std::vector<char> data)
 
 bool rom_device_t::load(reg_t addr, size_t len, uint8_t* bytes)
 {
-  if (addr + len > data.size())
+  if (addr + len > data.size()) {
+    printf("rom load %08lx-%08lx failed\n", addr, addr+len);
     return false;
+  }
+  printf("rom load %08lx-%08lx ok\n", addr, addr+len);
   memcpy(bytes, &data[addr], len);
   return true;
 }
