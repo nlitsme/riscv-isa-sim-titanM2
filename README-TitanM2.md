@@ -111,3 +111,10 @@ Also I commented out the `sim.cc` boot code, and replaced it with my own.
 First use the `mkelf.sh` script to convert a `evt.ec.bin` file to .elf suitable for spike.
 Then use either `run.sh`, for running the 'rw' firmware, or 'run8.sh` for running the `ro` part of the firmware.
 
+
+# Author
+
+Willem Hengeveld
+email: <itsme@xs4all.nl>
+github: https://github.com/nlitsme/riscv-isa-sim-titanM2
+
