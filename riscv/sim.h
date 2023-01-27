@@ -119,6 +119,7 @@ private:
   void interactive_pc(const std::string& cmd, const std::vector<std::string>& args);
   void interactive_priv(const std::string& cmd, const std::vector<std::string>& args);
   void interactive_mem(const std::string& cmd, const std::vector<std::string>& args);
+  void interactive_set(const std::string& cmd, const std::vector<std::string>& args);
   void interactive_str(const std::string& cmd, const std::vector<std::string>& args);
   void interactive_dumpmems(const std::string& cmd, const std::vector<std::string>& args);
   void interactive_mtime(const std::string& cmd, const std::vector<std::string>& args);
@@ -129,6 +130,7 @@ private:
   reg_t get_reg(const std::vector<std::string>& args);
   freg_t get_freg(const std::vector<std::string>& args, int size);
   reg_t get_mem(const std::vector<std::string>& args);
+  void set_mem(const std::vector<std::string>& args);
   reg_t get_pc(const std::vector<std::string>& args);
 
   friend class processor_t;

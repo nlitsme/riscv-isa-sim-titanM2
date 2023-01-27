@@ -266,6 +266,7 @@ void sim_t::interactive()
   funcs["pc"] = &sim_t::interactive_pc;
   funcs["priv"] = &sim_t::interactive_priv;
   funcs["mem"] = &sim_t::interactive_mem;
+  funcs["set"] = &sim_t::interactive_set;
   funcs["str"] = &sim_t::interactive_str;
   funcs["mtime"] = &sim_t::interactive_mtime;
   funcs["mtimecmp"] = &sim_t::interactive_mtimecmp;
@@ -647,6 +648,28 @@ reg_t sim_t::get_mem(const std::vector<std::string>& args)
   }
   return val;
 }
+void sim_t::set_mem(const std::vector<std::string>& args)
+{
+  if (args.size() != 2 && args.size() != 3)
+    throw trap_interactive();
+
+  mmu_t* mmu = debug_mmu;
+  int i = 0;
+  if (args.size() == 3)
+  {
+    processor_t *p = get_core(args[i++]);
+    mmu = p->get_mmu();
+  }
+  std::string addr_str = args[i++];
+  std::string value_str = args[i++];
+
+  reg_t addr = strtol(addr_str.c_str(),NULL,16);
+  if (addr == LONG_MAX)
+    addr = strtoul(addr_str.c_str(),NULL,16);
+  reg_t val = strtol(value_str.c_str(),NULL,16);
+
+  mmu->store<uint32_t>(addr, val);
+}
 
 void sim_t::interactive_mem(const std::string& cmd, const std::vector<std::string>& args)
 {
@@ -656,6 +679,12 @@ void sim_t::interactive_mem(const std::string& cmd, const std::vector<std::strin
   out << std::hex << "0x" << std::setfill('0') << std::setw(max_xlen/4)
       << zext(get_mem(args), max_xlen) << std::endl;
 }
+
+void sim_t::interactive_set(const std::string& cmd, const std::vector<std::string>& args)
+{
+  set_mem(args);
+}
+
 
 void sim_t::interactive_str(const std::string& cmd, const std::vector<std::string>& args)
 {
