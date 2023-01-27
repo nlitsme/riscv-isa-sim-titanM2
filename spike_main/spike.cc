@@ -19,6 +19,12 @@
 #include <limits>
 #include <cinttypes>
 #include "../VERSION"
+#include "plugins/pixelrom.h"
+#include "plugins/pixel4010.h"
+#include "plugins/pixel4011.h"
+#include "plugins/pixel404d.h"
+#include "plugins/pixel4062.h"
+#include "plugins/pixel4063.h"
 
 static void help(int exit_code = 1)
 {
@@ -403,6 +409,13 @@ int main(int argc, char** argv)
 
     plugin_devices.emplace_back(base, new mmio_plugin_device_t(name, args));
   };
+  auto rom = new pixelrom_device_t();
+  plugin_devices.emplace_back(0x00000000, rom);
+  plugin_devices.emplace_back(0x40100000, new pixel4010_device_t());
+  plugin_devices.emplace_back(0x40110000, new pixel4011_device_t());
+  plugin_devices.emplace_back(0x404d0000, new pixel404d_device_t());
+  plugin_devices.emplace_back(0x40620000, new pixel4062_device_t());
+  plugin_devices.emplace_back(0x40630000, new pixel4063_device_t());
 
   option_parser_t parser;
   parser.help(&suggest_help);
@@ -509,6 +522,9 @@ int main(int argc, char** argv)
 
   std::vector<std::pair<reg_t, mem_t*>> mems = make_mems(cfg.mem_layout());
 
+  if (cfg.start_pc)
+      rom->set_start(*cfg.start_pc);
+
   if (kernel && check_file_exists(kernel)) {
     const char *isa = cfg.isa();
     kernel_size = get_file_size(kernel);
@@ -522,6 +538,7 @@ int main(int argc, char** argv)
          break;
       }
     }
+    printf("kernel loaded\n");
   }
 
   if (initrd && check_file_exists(initrd)) {
