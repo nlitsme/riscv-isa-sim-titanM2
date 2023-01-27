@@ -9,7 +9,7 @@
 #include "debug_rom/debug_rom.h"
 #include "debug_rom_defines.h"
 
-#if 0
+#if 1
 #  define D(x) x
 #else
 #  define D(x)
@@ -124,6 +124,7 @@ void debug_module_t::reset()
 
 void debug_module_t::add_device(bus_t *bus) {
   bus->add_device(DEBUG_START, this);
+  printf("added debug module\n");
 }
 
 bool debug_module_t::load(reg_t addr, size_t len, uint8_t* bytes)
@@ -133,37 +134,62 @@ bool debug_module_t::load(reg_t addr, size_t len, uint8_t* bytes)
   if (addr >= DEBUG_ROM_ENTRY &&
       (addr + len) <= (DEBUG_ROM_ENTRY + debug_rom_raw_len)) {
     memcpy(bytes, debug_rom_raw + addr - DEBUG_ROM_ENTRY, len);
+    printf("debugmod ROM_ENTRY load %08lx-%08lx\n", addr, addr+len);
     return true;
   }
 
   if (addr >= DEBUG_ROM_WHERETO && (addr + len) <= (DEBUG_ROM_WHERETO + 4)) {
     memcpy(bytes, debug_rom_whereto + addr - DEBUG_ROM_WHERETO, len);
+    printf("debugmod ROM_WHERETO load %08lx-%08lx\n", addr, addr+len);
     return true;
   }
 
   if (addr >= DEBUG_ROM_FLAGS && ((addr + len) <= DEBUG_ROM_FLAGS + 1024)) {
     memcpy(bytes, debug_rom_flags + addr - DEBUG_ROM_FLAGS, len);
+    printf("debugmod ROM_FLAGS load %08lx-%08lx\n", addr, addr+len);
     return true;
   }
 
   if (addr >= debug_abstract_start && ((addr + len) <= (debug_abstract_start + sizeof(debug_abstract)))) {
     memcpy(bytes, debug_abstract + addr - debug_abstract_start, len);
+    printf("debugmod absstart load %08lx-%08lx\n", addr, addr+len);
     return true;
   }
 
   if (addr >= debug_data_start && (addr + len) <= (debug_data_start + sizeof(dmdata))) {
     memcpy(bytes, dmdata + addr - debug_data_start, len);
+    printf("debugmod datastart load %08lx-%08lx\n", addr, addr+len);
     return true;
   }
 
   if (addr >= debug_progbuf_start && ((addr + len) <= (debug_progbuf_start + program_buffer_bytes))) {
     memcpy(bytes, program_buffer + addr - debug_progbuf_start, len);
+    printf("debugmod progstart load %08lx-%08lx\n", addr, addr+len);
     return true;
   }
+  if (addr >= 0 && ((addr + len) <= (0x100))) {
+    memset(bytes, 0, len);
+    printf("debugmod TitanM2 bootrom load %08lx-%08lx\n", addr, addr+len);
+    return true;
+  }
+/*
+valid: entry=00000800-00000874
+valid: where=00000300-00000304
+valid: flags=00000400-00000800
+valid: abstract=00000344-00000374
+valid: data=00000380-00000388
+valid: progbuf=00000374-00000380
+
+ */
 
   D(fprintf(stderr, "ERROR: invalid load from debug module: %zd bytes at 0x%016"
           PRIx64 "\n", len, addr));
-
+  printf("valid: entry=%08x-%08x\n", DEBUG_ROM_ENTRY, DEBUG_ROM_ENTRY + debug_rom_raw_len);
+  printf("valid: where=%08x-%08x\n", DEBUG_ROM_WHERETO, DEBUG_ROM_WHERETO + 4);
+  printf("valid: flags=%08x-%08x\n", DEBUG_ROM_FLAGS, DEBUG_ROM_FLAGS + 1024);
+  printf("valid: abstract=%08lx-%08lx\n", debug_abstract_start, debug_abstract_start + sizeof(debug_abstract));
+  printf("valid: data=%08x-%08lx\n", debug_data_start, debug_data_start + sizeof(dmdata));
+  printf("valid: progbuf=%08x-%08x\n", debug_progbuf_start, debug_progbuf_start + program_buffer_bytes);
   return false;
 }
 
