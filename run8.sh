@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# don't --disable-dtb,  the dtb is what builds the tiny bootrom jump to a043c 
+#/spike -d --pc=0xa043c --isa=rv32IMC --priv=MU -m0x10000:0x180000,0x40000000:0x10000000,0xe0000000:0x10000 \
+#   --patch 0x40100270:0x80000 \
+#   --patch 0x40100274:0x20000 \
+#   --patch 0x404d0014:1 \
+#   evt.elf
+
+
+mem+=(0x10000:0x1f0000)
+
+mem+=(0x40000000:0x100)  # 
+mem+=(0x4001ff00:0x100)  # 
+mem+=(0x40030000:0x800)  # 
+mem+=(0x400c0000:0x100)  # 
+mem+=(0x400d0000:0x100)  #   watchdog
+mem+=(0x400e0000:0x100)  # 
+mem+=(0x40100000:0x400)  #   mmu?
+mem+=(0x40101000:0x100)  # 
+mem+=(0x40104000:0x400)  # 
+
+mem+=(0x40110000:0x100)  #   flash
+mem+=(0x40200000:0x100)  #   bignum
+mem+=(0x40204000:0x400)  #   elliptic curve
+mem+=(0x40208000:0x8000)  #   
+mem+=(0x40210000:0x100)  # 
+mem+=(0x40213000:0x400)  # 
+mem+=(0x40220000:0x100)  # 
+mem+=(0x40240000:0x100)  #   AES
+mem+=(0x40250000:0x100)  #   flash
+mem+=(0x40400000:0x100)  # 
+mem+=(0x40410000:0x100)  # 
+mem+=(0x40450000:0x400)  # 
+mem+=(0x404d0000:0x100)  #   uart
+mem+=(0x40520000:0x1000)  # 
+mem+=(0x40620000:0x1000)  # 
+mem+=(0x40621800:0x100)  # 
+mem+=(0x40630000:0x100)  #  timer
+mem+=(0x40631000:0x100)  # 
+mem+=(0xe000e000:0x100)  # 
+
+patches+=(--patch=0x00010164:8)
+patches+=(--patch=0x000120bc:2)
+
+export IFS=,
+./spike --log x.out --log-commits --pc=0x80410 --isa=rv32IMC --priv=MU --disable-dtb -m"${mem[*]}" "${patches[@]}" evt.elf
+# until pc 0 0
+
