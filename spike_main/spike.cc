@@ -359,6 +359,8 @@ int main(int argc, char** argv)
             /*default_real_time_clint=*/false,
             /*default_trigger_count=*/4);
 
+  std::vector<std::pair<uint64_t, uint64_t>> patches;
+
   auto const device_parser = [&plugin_devices](const char *s) {
     const std::string str(s);
     std::istringstream stream(str);
@@ -421,6 +423,14 @@ int main(int argc, char** argv)
     cfg.hartids = parse_hartids(s);
     cfg.explicit_hartids = true;
   });
+  parser.option(0, "patch", 1, [&](const char* s){
+          char *p = NULL;
+          auto addr = strtoull(s, &p, 0);
+          if (*p!=':') return;
+          auto value = strtoull(p+1, &p, 0);
+
+          patches.emplace_back(addr, value);
+          });
   parser.option(0, "ic", 1, [&](const char* s){ic.reset(new icache_sim_t(s));});
   parser.option(0, "dc", 1, [&](const char* s){dc.reset(new dcache_sim_t(s));});
   parser.option(0, "l2", 1, [&](const char* s){l2.reset(cache_sim_t::construct(s, "L2$"));});
@@ -525,7 +535,20 @@ int main(int argc, char** argv)
          break;
       }
     }
+    printf("initrd loaded\n");
   }
+  for (auto kv : patches) {
+    printf(".. finding %08lx\n", kv.first);
+    for (auto& m : mems) {
+      printf("m: %08lx -> %08lx\n", m.first, m.second->size());
+      if (m.first <= kv.first && kv.first+4-m.first < m.second->size()) {
+          m.second->store(kv.first-m.first, 4, (const uint8_t*)&kv.second);
+          printf("patched %08lx", kv.first);
+      }
+    }
+  }
+  if (!patches.empty())
+      printf("memory patched\n");
 
   if (cfg.explicit_hartids) {
     if (nprocs.overridden() && (nprocs() != cfg.nprocs())) {
