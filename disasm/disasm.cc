@@ -848,6 +848,13 @@ void disassembler_t::add_instructions(const isa_parser_t* isa)
   DEFINE_ITYPE_SHIFT(srliw);
   DEFINE_ITYPE_SHIFT(sraiw);
 
+  // google custom insn
+  DEFINE_ITYPE(bitscan);
+  DEFINE_ITYPE(rbitscan);
+  DEFINE_ITYPE(swab32);
+  DEFINE_ITYPE(google0);
+  DEFINE_ITYPE(google1);
+
   DEFINE_RTYPE(add);
   DEFINE_RTYPE(sub);
   DEFINE_RTYPE(sll);
