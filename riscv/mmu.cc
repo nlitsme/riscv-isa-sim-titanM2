@@ -130,10 +130,17 @@ reg_t reg_from_bytes(size_t len, const uint8_t* bytes)
 
 bool mmu_t::mmio_ok(reg_t paddr, access_type UNUSED type)
 {
+#if 0
   // Disallow access to debug region when not in debug mode
   if (paddr >= DEBUG_START && paddr <= DEBUG_END && proc && !proc->state.debug_mode)
+  {
+    printf("mmiook(%08lx, %d) = false\n", addr, type);
+    printf("db.start=%08lx, db.end=%08lx, proc = %x, dbmode=%d\n", 
+        DEBUG_START, DEBUG_END, proc, proc->state.debug_mode);
     return false;
-
+  }
+#endif
+  //printf("mmiook(%08lx, %d) = true\n", addr, type);
   return true;
 }
 

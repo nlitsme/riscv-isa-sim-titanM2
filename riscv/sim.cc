@@ -68,7 +68,7 @@ sim_t::sim_t(const cfg_t *cfg, bool halted,
   for (auto& x : plugin_devices)
     bus.add_device(x.first, x.second);
 
-  debug_module.add_device(&bus);
+  //debug_module.add_device(&bus);
 
   socketif = NULL;
 #ifdef HAVE_BOOST_ASIO
@@ -281,8 +281,11 @@ static bool paddr_ok(reg_t addr)
 
 bool sim_t::mmio_load(reg_t paddr, size_t len, uint8_t* bytes)
 {
-  if (paddr + len < paddr || !paddr_ok(paddr + len - 1))
+  if (paddr + len < paddr || !paddr_ok(paddr + len - 1)) {
+    printf("sim.mmioload(%08lx-%08lx) failed\n", paddr, paddr+len);
     return false;
+  }
+  //printf("sim.mmioload(%08lx-%08lx) -> bus\n", paddr, paddr+len);
   return bus.load(paddr, len, bytes);
 }
 
@@ -326,7 +329,6 @@ void sim_t::make_dtb()
     exit(-1);
   }
 }
-
 void sim_t::set_rom()
 {
   const int reset_vec_size = 8;
@@ -431,5 +433,5 @@ endianness_t sim_t::get_target_endianness() const
 
 void sim_t::proc_reset(unsigned id)
 {
-  debug_module.proc_reset(id);
+  //debug_module.proc_reset(id);
 }
