@@ -1,3 +1,0 @@
-// TODO
-WRITE_RD(RS1);
-

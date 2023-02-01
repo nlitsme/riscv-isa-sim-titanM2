@@ -1309,8 +1309,10 @@ riscv_insn_google = \
 	bitscan \
 	rbitscan \
 	swab32 \
-	google0 \
-	google1 \
+	gclrbit  \
+	gsetbit  \
+	gclrbiti \
+	gsetbiti \
 
 riscv_insn_list = \
 	$(riscv_insn_ext_a) \

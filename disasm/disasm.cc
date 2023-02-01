@@ -852,8 +852,10 @@ void disassembler_t::add_instructions(const isa_parser_t* isa)
   DEFINE_ITYPE(bitscan);
   DEFINE_ITYPE(rbitscan);
   DEFINE_ITYPE(swab32);
-  DEFINE_ITYPE(google0);
-  DEFINE_ITYPE(google1);
+  DEFINE_ITYPE_SHIFT(gclrbiti);
+  DEFINE_ITYPE_SHIFT(gsetbiti);
+  DEFINE_RTYPE(gclrbit);
+  DEFINE_RTYPE(gsetbit);
 
   DEFINE_RTYPE(add);
   DEFINE_RTYPE(sub);
